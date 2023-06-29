@@ -1,0 +1,76 @@
+local Gear = script.Parent
+local MainFrame = Gear.Parent.Parent.SettingsFrame
+local Blur = game.Lighting.Blur
+local Camera = workspace.CurrentCamera
+local Remote = game:GetService("ReplicatedStorage").GUI.InGUI
+local TS = game:GetService("TweenService")
+local InGui = false
+local InTween = false
+
+local Down = function()
+	game.SoundService.SFX["Button Click"]:Play()
+	Gear:TweenPosition(UDim2.new(0.069,0,0.091,0),
+		Enum.EasingDirection.Out,
+		Enum.EasingStyle.Quad,
+		0.1,
+		true
+	)
+end
+
+local Up = function()
+	Gear:TweenPosition(UDim2.new(0.069,0,0.061,0),
+		Enum.EasingDirection.Out,
+		Enum.EasingStyle.Quad,
+		0.1,
+		true
+	)
+end
+
+Gear.MouseButton1Down:Connect(function()
+	Down()
+end)
+Gear.MouseButton1Up:Connect(function()
+	Up() --tween button movement
+	
+	--tween settings gui movement/appearance
+	if not InTween then
+		if InGui then
+			InGui = false
+			InTween = true
+			MainFrame:TweenPosition(UDim2.new(0.5,0,-0.575,0),Enum.EasingDirection.In,Enum.EasingStyle.Back,0.25,true) --tween back up
+			--tween zoom out
+			local ZoomOut = TS:Create(Camera,TweenInfo.new(0.25,Enum.EasingStyle.Sine),{FieldOfView = 70})
+			ZoomOut:Play()
+			
+			--tween blur
+			local UnBlur = TS:Create(Blur,TweenInfo.new(0.25,Enum.EasingStyle.Sine),{Size = 0})
+			UnBlur:Play()
+			
+			task.wait(.25)
+			MainFrame.Visible = false --hide gui off screen
+			Blur.Enabled = false
+			InTween = false
+		else
+			InGui = true
+			InTween = true
+			MainFrame.Visible = true --make gui visible
+			MainFrame.Position = UDim2.new(0.5,0,-0.575,0) --starting pos right before tween just to set everything up
+			MainFrame:TweenPosition(UDim2.new(0.5,0,0.5,0),Enum.EasingDirection.Out,Enum.EasingStyle.Back,0.25,true) --tween down
+			
+			--tween zoom in
+			local ZoomIn = TS:Create(Camera,TweenInfo.new(0.25,Enum.EasingStyle.Sine),{FieldOfView = 60})
+			ZoomIn:Play()
+			
+			--tween blur
+			Blur.Enabled = true
+			local Blur = TS:Create(Blur,TweenInfo.new(0.25,Enum.EasingStyle.Sine),{Size = 15})
+			Blur:Play()
+			
+			task.wait(.25)
+			InTween = false
+		end
+	end
+end)
+Gear.MouseLeave:Connect(function()
+	Up()
+end)
