@@ -1,0 +1,25 @@
+local ProcSettingsRemote = game.ReplicatedStorage.GUI.ProcSettings
+ProcSettingsRemote.OnServerEvent:Connect(function(Player,Setting,State)
+	if Player == script.Parent.Parent.Parent.Parent.Parent then
+		local Settings = Player.PlayerData.Settings
+		if Setting == "Music" then
+			if State then
+				Settings.Music.Value = true
+			else
+				Settings.Music.Value = false
+			end
+		elseif Setting == "Sound" then
+			if State then
+				Settings.Sound.Value = true
+			else
+				Settings.Sound.Value = false
+			end
+		elseif Setting == "Trade" then
+			if State then
+				Settings.Trade.Value = true
+			else
+				Settings.Trade.Value = false
+			end
+		end
+	end
+end)
